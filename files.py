@@ -56,11 +56,6 @@ class FileAsset(Asset):
             for nstruct in struct["node_library"]:
                 asset = parseNode(self, nstruct)
 
-        if LS.useModifiers and "modifier_library" in struct.keys():
-            from .modifier import parseModifierAsset
-            for mstruct in struct["modifier_library"]:
-                asset = parseModifierAsset(self, mstruct)
-
         if LS.useImages and "image_library" in struct.keys():
             from .material import Images
             for mstruct in struct["image_library"]:
@@ -71,9 +66,8 @@ class FileAsset(Asset):
             for mstruct in struct["material_library"]:
                 asset = self.parseTypedAsset(mstruct, CyclesMaterial)
 
-        if "scene" in struct.keys():
-            scene = struct["scene"]
-
+        scene = struct.get("scene")
+        if scene:
             if LS.useNodes and "nodes" in scene.keys():
                 from .node import Node
                 from .geometry import Geometry
@@ -95,6 +89,13 @@ class FileAsset(Asset):
                         msg = ("Expected node but got\n%s" % asset)
                         reportError(msg)
 
+        # Import modifier library after nodes to avoid duplicate geometry definitions
+        if LS.useModifiers and "modifier_library" in struct.keys():
+            from .modifier import parseModifierAsset
+            for mstruct in struct["modifier_library"]:
+                asset = parseModifierAsset(self, mstruct)
+
+        if scene:
             if LS.useMaterials and "materials" in scene.keys():
                 for mstruct in scene["materials"]:
                     from .cycles import CyclesMaterial
@@ -226,7 +227,7 @@ class FileAsset(Asset):
             if asset:
                 if isinstance(asset, Geometry):
                     msg = ("Duplicate geometry definition:\n  %s" % asset)
-                    reportError(msg)
+                    #reportError(msg)
                 return asset
             else:
                 asset = typedAsset(self.fileref)
