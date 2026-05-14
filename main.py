@@ -914,7 +914,7 @@ class EasyImportDAZ(DazOperator, MultiFile, ColorOptions, FitOptions,
 
         if self.useApplyTransforms:
             from .apply import applyTransforms
-            applyTransforms(objects)
+            applyTransforms(objects + hdmeshes)
 
         if mainRig and activateObject(context, mainRig):
             if self.useEliminateEmpties:

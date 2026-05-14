@@ -36,6 +36,7 @@ def getSelectedObjectAndChildren(context):
 
 def applyTransforms(objects):
     print("Apply transforms")
+    objects = set(objects)
     bpy.ops.object.select_all(action='DESELECT')
     wmats = []
     vpmats = []
