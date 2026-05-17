@@ -1063,7 +1063,11 @@ class EasyImportDAZ(DazOperator, MultiFile, ColorOptions, FitOptions,
         # Transfer to HD meshes
         if self.useTransferHD and firstMesh:
             print("Transfer from %s to HD meshes" % firstMesh.name)
-            self.transferShapes(context, firstMesh, hdmeshes, True, "All", useShapeAsDriver=False)
+            hdobs = set(hdmeshes)
+            for hdob in hdmeshes:
+                if isHair(hdob) and not self.useTransferHair:
+                    hdobs.remove(hdob)
+            self.transferShapes(context, firstMesh, hdobs, True, "All", useShapeAsDriver=False)
             if isSingleHD and geografts and hdmeshes:
                 print("Single HD %s, transfer geografts" % hdmeshes[0].name)
                 from .hd_data import getHDMaterialVertNums
